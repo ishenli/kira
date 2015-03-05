@@ -1,2 +1,2 @@
-# tigger
+# kira
 A Simple SPA Framework

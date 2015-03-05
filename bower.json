@@ -1,0 +1,24 @@
+{
+  "name": "tigger",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "dep"
+  ],
+  "devDependencies": {
+    "winnie": "https://github.com/ishenli/winnie.git"
+  },
+  "homepage": "https://github.com/ishenli/tigger",
+  "authors": [
+    "ishenli <meshenli@gmail.com>"
+  ],
+  "keywords": [
+    "spa"
+  ]
+}
