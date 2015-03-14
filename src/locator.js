@@ -71,12 +71,33 @@ define(function (require) {
         }
     }
 
+    function stop() {
+        if (rollTimer) {
+            clearInterval(rollTimer);
+            rollTimer = null;
+        }
+        if (startupTimer) {
+            clearTimeout(startupTimer);
+            startupTimer = null;
+        }
+
+        if (window.removeEventListener) {
+            window.removeEventListener('hashchange', forwardHash, false);
+        }
+        else if ('onhashchange' in window && document.documentMode > 7) {
+            window.detachEvent('onhashchange', forwardHash);
+        }
+    }
+
     /**
      * 开始启动监听hash的变化
      */
     locator.start = function () {
         start(true);
     };
+
+    locator.stop = stop;
+
 
     /**
      * 根据输入的URL，进行处理后获取真实应该跳转的URL地址

@@ -83,7 +83,7 @@ define(function (require) {
          *        View#afterrender
          */
         render: function (data) {
-            if (!this.main) {
+            if (!this.container) {
                 return;
             }
 
@@ -96,7 +96,7 @@ define(function (require) {
             this.fire('beforeRender', data);
 
             // this.template 是模板引擎的实例
-            this.main.innerHTML = this.template.render(this.templateMainTarget, data);
+            this.container.innerHTML = this.template.render(this.templateMainTarget, data);
 
             /**
              * 渲染前事件
@@ -120,24 +120,24 @@ define(function (require) {
         },
         /**
          * 设置容器主元素
-         * @param {HTMLElement} ele
+         * @param {HTMLElement} ele 容器元素
          */
-        setMain: function (ele) {
-            this.main = ele;
+        setContainer: function (ele) {
+            this.container = ele;
         },
         /**
          * 委托事件
-         * @param {HTMLElement} node
-         * @param {string} type
-         * @param {string} selector
-         * @param {Function} fn
+         * @param {HTMLElement} node 节点
+         * @param {string} type 事件类型
+         * @param {string} selector 选择器
+         * @param {Function} fn 监听函数
          */
         addDomEvent: function (node, type, selector, fn) {
             if (util.inArray(node, this.bindElements)) {
                 this.bindElements.push(node);
             }
 
-            lib.on(node, type, selector, util.bind(fn,this));
+            lib.on(node, type, selector, util.bind(fn, this));
         },
 
         /**
@@ -162,7 +162,9 @@ define(function (require) {
             this.bindElements = [];
 
             // 解除元素引用
-            this.main = null;
+            this.container = null;
+
+            View.superClass.dispose.call(this);
         }
     });
 
@@ -180,7 +182,7 @@ define(function (require) {
             name = name.split(':');
             type = util.trim(name[0]);
             selector = name[1] ? util.trim(name[1]) : undefined;
-            view.addDomEvent(view.main, type, selector, fn);
+            view.addDomEvent(view.container, type, selector, fn);
 
         });
     }

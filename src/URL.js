@@ -30,7 +30,7 @@ define(function (require) {
         };
 
         /**
-         * @method getSearch
+         * getSearch
          *
          * 获取search部分
          *
@@ -43,7 +43,7 @@ define(function (require) {
         var query = null;
 
         /**
-         * @method getQuery
+         * getQuery
          *
          * 获取参数对象或指定参数的值
          *
@@ -86,9 +86,7 @@ define(function (require) {
                 options.querySeparator
             );
         }
-        else {
-            return new URL(url, '', options.querySeparator);
-        }
+        return new URL(url, '', options.querySeparator);
 
     };
 
@@ -96,6 +94,7 @@ define(function (require) {
      * 根据`query`规则解析字符串并返回参数对象
      * eg:name=shenli&age=18&sex=boy
      * @param {string} search 搜索条件
+     * @return {?Object} query对象
      */
     URL.parseQuery = function (search) {
         var groups = search.split('&');

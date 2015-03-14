@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no,minimal-ui">
+    <title>todo demo</title>
+    <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/2-0-4/esl.js"></script>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
+    <style>
+        input {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        #main{
+            width: 480px;
+            margin: 50px auto;
+            padding: 10px 20px;
+        }
+        a{
+            cursor: pointer;
+
+        }
+        .remove{
+            float: right;
+        }
+    </style>
+</head>
+<body>
+<section id="main">
+
+</section>
+<script type="text/template" id="template">
+<!--target:main-->
+<!--if:${isEdit}-->
+<!--import:edit-->
+<!--else-->
+<!--import:show-->
+<!--/if-->
+<!--/target-->
+
+
+
+<!--target:edit-->
+<form class="form-inline">
+    <div class="form-group">
+        <label for="name">更新任务名：</label>
+        <input type="text" class="form-control"  value="${todo.name}" id="name"  autocomplete="off" placeholder="name">
+    </div>
+    <input type="button" value="更新" id="btn-update" class="btn btn-success">
+</form>
+<!--/target-->
+
+<!--target:list-->
+<!--for:${table} as ${item},${index}-->
+<tr>
+    <th scope="row">${index|add(1)}</th>
+    <td>${item.name}</td>
+    <td><a class="detail" href="#~id=${item.id}">详细</a> <a class="remove" data-id="${item.id}">删除</a></td>
+</tr>
+<!--/for-->
+<!--/target-->
+
+<!--target:show-->
+<form class="form-inline">
+    <div class="form-group">
+        <label for="name">请输入任务名：</label>
+        <input type="text" class="form-control" id="name"  autocomplete="off" placeholder="name">
+    </div>
+    <input type="button" value="添加" id="btn-add" class="btn btn-success">
+</form>
+<div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>任务名</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="list">
+        <!--import:list-->
+        </tbody>
+    </table>
+</div>
+<!--/target-->
+
+</script>
+<!-- edp: { "loaderAutoConfig": false } -->
+<script>
+    require.config({
+        'baseUrl': './',
+        'packages': [
+            {
+                'name': 'winnie-ui',
+                'location': '../../dep/winnie-ui/src',
+                'main': 'Widget'
+            },
+            {
+                'name': 'winnie',
+                'location': '../../dep/winnie/src',
+                'main': 'lib'
+            },
+            {
+                'name': 'etpl',
+                'location': '../../dep/etpl/3.0.0/src',
+                'main': 'main'
+            },
+            {
+                'name': 'kira',
+                'location': '../../src',
+                'main': 'main'
+            },
+            {
+                'name': 'saber-storage',
+                'location': '../../dep/saber-storage/1.0.0/src',
+                'main': 'storage'
+            }
+        ],
+        'paths': {}
+    });
+    require(['winnie/lib','main','kira'], function (lib, main, kira) {
+        kira.start();
+        main.init();
+    });
+</script>
+</body>
+</html>

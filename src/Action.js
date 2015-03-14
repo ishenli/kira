@@ -12,11 +12,14 @@ define(function (require) {
 
 
     var Action = Abstract.extend({
+
         initialize: function (options) {
             Action.superClass.initialize.call(this, options);
             this.init();
             this.emit('init');
+            this.disposed = false;
         },
+
         /**
          * 初始化
          * @public
@@ -54,30 +57,88 @@ define(function (require) {
          * 完成数据请求，页面渲染
          *
          * @public
-         * @param {string} path 当前的访问路径
-         * @param {Object} query 查询条件
-         * @param {HTMLElement} main 视图容器
-         * @param {Object} options action配置
+         * @param {ActionContext} actionContext Action的上下文
+         * @param {URL} actionContext.url 当前的URL对象
+         * @param {Object} actionContext.query 查询条件
+         * @param {HTMLElement} actionContext.container 视图容器
+         * @param {Object} actionContext.options action配置
+         * @return {Promise}
          */
-        enter: function (path, query, main, options) {
-            this.path = path;
-            this.options = util.extend({}, options);
+        enter: function (actionContext) {
 
-            this.view.setMain(main);
+            this.view.setContainer(actionContext.container);
 
             this.emit('enter');
 
+            var args = util.extend({}, actionContext && actionContext.args);
+
+            if (this.model) {
+                this.model.fill(args);
+            }
+
+
             // 通过model发起请求，获取数据
-            return this.model.fetch(query)
-                .then(util.bind(this.createView, this));
+            return this.model.fetch(args.query).then(
+                util.bind(this.createView, this),
+                util.bind(this.reportError, this)
+            );
+        },
+        /**
+         * 离开当前Action，清理Model和View
+         *
+         * @protected
+         * @fires beforeLeave
+         * @fires leave
+         * @return {?Action}
+         */
+        leave: function () {
+            // 如果已经销毁了就别再继续下去
+            if (this.disposed) {
+                return this;
+            }
+
+            this.disposed = true;
+
+            this.fire('beforeLeave', this);
+
+            if (this.model) {
+                if (typeof this.model.dispose === 'function') {
+                    this.model.dispose();
+                }
+                this.model = null;
+            }
+
+            if (this.view) {
+                if (typeof this.view.dispose === 'function') {
+                    this.view.dispose();
+                }
+                this.view = null;
+            }
+
+            /**
+             * @event leave
+             *
+             * 离开Action后触发
+             */
+            this.fire('leave');
+
+
+            // 消除所有绑定的事件，这是emitter的方法
+            this.off();
+
         },
         /**
          * 加载完Model后，进入View相关的逻辑
          *
          * @protected
+         * @param {Object=} data 模型数据
+         * @return {?Action}
          */
-        createView: function(data) {
+        createView: function (data) {
 
+            if (this.disposed) {
+                return this;
+            }
             /**
              * @event beforeRender
              *
@@ -105,6 +166,31 @@ define(function (require) {
              */
             this.fire('enterComplete');
 
+        },
+        /**
+         * 报告错误
+         * @param {string|Object} reason 错误信息
+         * @return {Error}
+         */
+        reportError: function (reason) {
+            var errors = [];
+            var item;
+            for (var i = 0; i < arguments.length; i++) {
+                item = arguments[i];
+                if (item) {
+                    errors.push(errors);
+                }
+            }
+
+            return this.handleError(errors);
+        },
+        /**
+         * 处理错误
+         * @override
+         * @param {Array} errors 错误数组
+         */
+        handleError: function (errors) {
+            throw  errors;
         }
     });
 

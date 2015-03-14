@@ -7,7 +7,7 @@ define(function () {
     var config = {};
 
     config = {
-        indexURL:'/'
+        indexURL: '/'
 
     };
 

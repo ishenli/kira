@@ -5,7 +5,6 @@
 
 define(function (require) {
 
-    var router = require('./router');
     var assert = require('winnie/lib/assert');
     var util = require('winnie/lib/util');
     var Action = require('./action');
@@ -82,7 +81,10 @@ define(function (require) {
 
             actionContext.referrer = this.currentURL;
 
-            actionContext.args = util.extend({}, actionContext, url.getQuery());
+            actionContext.args = util.extend({}, actionContext);
+
+            actionContext.args.query = url.getQuery();
+
 
             this.getEvents().fire('forwardAction', util.extend({
                 controller: this
@@ -96,6 +98,12 @@ define(function (require) {
 
         },
 
+        /**
+         * 执行action
+         * @param {Object} value 值
+         * @param {Action} value.action Action实例
+         * @param {ActionContext} value.actionContext Action执行的上下文
+         */
         enterAction: function (value) {
             var me = this;
             var action = value.action;
@@ -112,6 +120,9 @@ define(function (require) {
                 }
             }
 
+            this.currentAction = action;
+
+
             function complete() {
                 this.getEvents().fire('enterActionComplete', util.mix({
                     controller: me,
@@ -120,23 +131,14 @@ define(function (require) {
             }
 
             function fail() {
-
+                this.getEvents().fire('enterActionFail', util.mix({
+                    controller: me,
+                    action: action
+                }, actionContext));
             }
 
-            this.currentAction = action;
 
-            var args = {
-                path: actionContext.url.getPath(),
-                query: actionContext.url.getQuery(),
-                main: actionContext.container,
-                options: actionContext
-            };
-
-            var entering = action.enter(
-                actionContext.url.getPath(),
-                actionContext.url.getQuery(),
-                actionContext.container
-            );
+            var entering = action.enter(actionContext);
 
             entering.then(complete, fail);
         },
@@ -144,6 +146,15 @@ define(function (require) {
         findActionConfig: function (actionContext) {
             return this.actionPathMapping[actionContext.url.getPath()];
         },
+        /**
+         * 根据URL加载对应的Action对象
+         *
+         * @param {ActionContext} actionContext 调用Action的初始化参数
+         * @return {Promise} 如果有相应的Action配置，返回一个Promise对象。
+         * 如果正确创建了{@link Action}对象，则该Promise对象进入`resolved`状态。
+         * 如果没找到{@link Action}的配置或者加载{@link Action}失败，则该Promise进入`rejected`状态
+         * @protected
+         */
         loadAction: function (actionContext) {
             var actionConfig = this.findActionConfig(actionContext);
 
@@ -181,7 +192,7 @@ define(function (require) {
                         action: action,
                         actionContext: actionContext
                     });
-                }
+                };
             });
 
             // action为字符串

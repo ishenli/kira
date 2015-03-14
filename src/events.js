@@ -4,11 +4,12 @@
  */
 
 define(function (require) {
+
     var Emitter = require('winnie/lib/emitter');
 
     var exports = {};
 
-    exports.notifyError = function(events) {
+    exports.notifyError = function (events) {
         this.fire('error', events);
     };
 

@@ -17,7 +17,7 @@ define(function (require) {
         /**
          * 默认实例的调用的方法
          */
-        init:function() {
+        init: function () {
             bindEvents(this);
         },
 
@@ -26,8 +26,8 @@ define(function (require) {
          * @override
          * @public
          */
-        dispose:function() {
-
+        dispose: function () {
+            this.off();
         }
 
     });
@@ -49,7 +49,7 @@ define(function (require) {
         var events = host.events || {};
         var fn;
 
-        util.each(util.keys(events),function(name) {
+        util.each(util.keys(events), function (name) {
             fn = events[name];
 
             // 有：表示是组件的事件
@@ -64,7 +64,7 @@ define(function (require) {
                 }
             }
             else {
-                host.on(name,fn)
+                host.on(name, fn);
             }
         });
     }
