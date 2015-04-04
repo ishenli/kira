@@ -13,9 +13,7 @@
         "loaderAutoConfig": "js,htm,html,tpl,vm,phtml",
         "loaderUrl": "http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-2/esl.js",
         "dependencies": {
-            "etpl": "~3.0.0",
-            "winnie": "~0.6.1",
-            "saber-storage": "~1.0.0"
+            "etpl": "~3.0.0"
         }
     },
     "dependencies": {},
